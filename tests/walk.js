@@ -167,6 +167,8 @@ test("walk doesn't break when you overreach ranges", assert => {
             8: { name: 'name8' },
             9: { name: 'name9' },
             10: { name: 'name10' },
+            11: null,
+            12: null,
         }
     }
 

@@ -19,34 +19,39 @@ const isGraphPrimative = v => typeof v !== 'object' || (
     graphPrimatives.indexOf(v['$type']) > 0
 )
 
-const selectorToArray = (schemaFragment, selector) => {
-    // looks like an array
-    if (typeof selector.map === 'function') {
-        return selector
-    }
-
-    if (selector.from != null && selector.to != null) {
-        const branches = []
-        for (let i = selector.from; i <= selector.to; i++) {
-
-            // Don't go down ranges that don't exist. This allows for
-            // overreaching a range hwen you need pages of data.
-            if (schemaFragment[i] != null) {
-                branches.push(i)
-            }
-
-        }
-        return branches
-    }
-
-    throw new Error('Unknown selector format')
-}
 
 // returns a jsonGraphEnvelope
 // http://netflix.github.io/falcor/doc/global.html#JSONGraphEnvelope
 export default function walk(schemaRoot, ...paths) {
     // This will get built up to contain exactly the values the user asked for
     let jsonGraph = {}
+    const invalidated = []
+
+    const selectorToArray = (schemaFragment, past, selector) => {
+        // looks like an array
+        if (typeof selector.map === 'function') {
+            return selector
+        }
+
+        if (selector.from != null && selector.to != null) {
+            const branches = []
+            for (let i = selector.from; i <= selector.to; i++) {
+
+                // Don't go down ranges that don't exist. This allows for
+                // overreaching a range hwen you need pages of data.
+                if (schemaFragment[i] == null) {
+                    jsonGraph = set(jsonGraph, [...past, i], null)
+                } else {
+                    branches.push(i)
+                }
+
+            }
+            return branches
+        }
+
+        throw new Error('Unknown selector format')
+    }
+
     const step = (schemaFragment, [nextKey, ...tail], past = []) => {
         let currentPath
         const next = (value) => {
@@ -63,7 +68,7 @@ export default function walk(schemaRoot, ...paths) {
         // { from: 0, to: 3}
         // [ 'a', 'b', 'c' ]
         if (typeof nextKey === 'object') {
-            const branches = selectorToArray(schemaFragment, nextKey).map((key) => {
+            const branches = selectorToArray(schemaFragment, past, nextKey).map((key) => {
                 return step(schemaFragment, [key, ...tail], past)
             })
 
@@ -74,8 +79,7 @@ export default function walk(schemaRoot, ...paths) {
 
         currentPath = [...past, nextKey]
         if (schemaFragment == null) {
-            jsonGraph = set(jsonGraph, currentPath,
-                graphError(`Invalid path: ${JSON.stringify(currentPath)}`))
+            jsonGraph = set(jsonGraph, currentPath, schemaFragment)
             return
         }
 
@@ -101,6 +105,7 @@ export default function walk(schemaRoot, ...paths) {
         paths.map(p => step(schemaRoot, p))
     ).then(() => ({
         paths,
-        jsonGraph
+        jsonGraph,
+        invalidated,
     }))
 }
