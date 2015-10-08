@@ -19,7 +19,7 @@ const isGraphPrimative = v => typeof v !== 'object' || (
     graphPrimatives.indexOf(v['$type']) > 0
 )
 
-const selectorToArray = (selector) => {
+const selectorToArray = (schemaFragment, selector) => {
     // looks like an array
     if (typeof selector.map === 'function') {
         return selector
@@ -28,7 +28,13 @@ const selectorToArray = (selector) => {
     if (selector.from != null && selector.to != null) {
         const branches = []
         for (let i = selector.from; i <= selector.to; i++) {
-            branches.push(i)
+
+            // Don't go down ranges that don't exist. This allows for
+            // overreaching a range hwen you need pages of data.
+            if (schemaFragment[i] != null) {
+                branches.push(i)
+            }
+
         }
         return branches
     }
@@ -57,7 +63,7 @@ export default function walk(schemaRoot, ...paths) {
         // { from: 0, to: 3}
         // [ 'a', 'b', 'c' ]
         if (typeof nextKey === 'object') {
-            const branches = selectorToArray(nextKey).map((key) => {
+            const branches = selectorToArray(schemaFragment, nextKey).map((key) => {
                 return step(schemaFragment, [key, ...tail], past)
             })
 

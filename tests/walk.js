@@ -19,6 +19,10 @@ const testData = {
         return 'hello'
     },
     range({from, to}) {
+        if ( to > 10 ) {
+            to = 10
+        }
+
         const data = {}
         for (let id = from; id <= to; id++) {
             data[id] = {
@@ -38,8 +42,6 @@ const testData = {
     },
     a: { id: 1 },
     b: { id: 2 },
-    root1: 'root1',
-    root2: 'root2',
 }
 
 
@@ -157,4 +159,20 @@ test('walk can walk through refs', assert => {
         assert.end()
     })
 
+})
+
+test("walk doesn't break when you overreach ranges", assert => {
+    const expected = {
+        range: {
+            8: { name: 'name8' },
+            9: { name: 'name9' },
+            10: { name: 'name10' },
+        }
+    }
+
+    walk(testData, ['range', { from: 8, to: 12 }, 'name']).then(({ jsonGraph: actual }) => {
+        // deepEqual didn't seem to work here. Maybe it doesn't work with arrays?
+        assert.equal(JSON.stringify(actual), JSON.stringify(expected))
+        assert.end()
+    })
 })
