@@ -1,6 +1,6 @@
 {
   "name": "falcor-local-datasource",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "DataSource for when you can't or don't want to run a specialized server",
   "main": "dist/data_store.js",
   "scripts": {
