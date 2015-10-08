@@ -2,8 +2,9 @@
   "name": "falcor-local-datasource",
   "version": "0.0.1",
   "description": "DataSource for when you can't or don't want to run a specialized server",
-  "main": "dist/data_source.js",
+  "main": "dist/data_store.js",
   "scripts": {
+    "prepublish": "babel -d dist src/",
     "test": "babel-node ./node_modules/.bin/tape tests/*.js"
   },
   "repository": {
