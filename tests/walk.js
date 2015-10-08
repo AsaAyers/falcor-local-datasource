@@ -146,8 +146,9 @@ test('walk accepts multiple path parameters', assert => {
 
 test('walk can walk through refs', assert => {
     const expected = {
-        me: {
-            name: 'Asa Ayers'
+        me: { $type: 'ref', value: [ 'users', 1 ] },
+        users: {
+            1: { name: 'Asa Ayers' }
         }
     }
 

@@ -73,8 +73,11 @@ export default function walk(schemaRoot, ...paths) {
 
         let nextFragment = schemaFragment[nextKey]
         if (typeof nextFragment === 'object' && nextFragment['$type'] === 'ref') {
-            currentPath = nextFragment.value
-            nextFragment = getIn(schemaRoot, nextFragment.value)
+            data = set(data, currentPath, nextFragment)
+
+            const value = getIn(schemaRoot, nextFragment.value)
+            return step(value, tail, nextFragment.value)
+
         }
 
         if (typeof nextFragment === 'function') {
