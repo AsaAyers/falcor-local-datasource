@@ -51,7 +51,7 @@ test('walk plain value', assert => {
             }
         }
     }
-    walk(testData, ['foo', 'bar', 'baz']).then((actual) => {
+    walk(testData, ['foo', 'bar', 'baz']).then(({ jsonGraph: actual }) => {
         assert.deepEqual(actual, expected)
         assert.end()
     })
@@ -66,7 +66,7 @@ test('walk multiple values', assert => {
             }
         }
     }
-    walk(testData, ['foo', 'bar', ['baz', 'qux']]).then((actual) => {
+    walk(testData, ['foo', 'bar', ['baz', 'qux']]).then(({ jsonGraph: actual }) => {
         assert.deepEqual(actual, expected)
         assert.end()
     })
@@ -78,7 +78,7 @@ test('walk simple function', assert => {
         greeting: 'hello'
     }
 
-    walk(testData, ['greeting']).then((actual) => {
+    walk(testData, ['greeting']).then(({ jsonGraph: actual }) => {
         assert.deepEqual(actual, expected)
         assert.end()
     })
@@ -93,7 +93,7 @@ test('walk with a range', assert => {
         }
     }
 
-    walk(testData, ['range', { from: 0, to: 2 }, 'name']).then((actual) => {
+    walk(testData, ['range', { from: 0, to: 2 }, 'name']).then(({ jsonGraph: actual }) => {
         // deepEqual didn't seem to work here. Maybe it doesn't work with arrays?
         assert.equal(JSON.stringify(actual), JSON.stringify(expected))
         assert.end()
@@ -109,7 +109,7 @@ test('walk with a non-zero range', assert => {
         }
     }
 
-    walk(testData, ['range', { from: 3, to: 5 }, 'name']).then((actual) => {
+    walk(testData, ['range', { from: 3, to: 5 }, 'name']).then(({ jsonGraph: actual }) => {
         // deepEqual didn't seem to work here. Maybe it doesn't work with arrays?
         assert.equal(JSON.stringify(actual, null, 2), JSON.stringify(expected, null, 2))
         assert.end()
@@ -121,7 +121,7 @@ test('walk to a promised value', assert => {
         asyncGreeting: 'hello'
     }
 
-    walk(testData, ['asyncGreeting']).then((actual) => {
+    walk(testData, ['asyncGreeting']).then(({ jsonGraph: actual }) => {
         assert.deepEqual(actual, expected)
         assert.end()
     })
@@ -138,7 +138,7 @@ test('walk accepts multiple path parameters', assert => {
         ['asyncGreeting'],
     ]
 
-    walk(testData, ...paths).then((actual) => {
+    walk(testData, ...paths).then(({ jsonGraph: actual }) => {
         assert.deepEqual(actual, expected)
         assert.end()
     })
@@ -152,7 +152,7 @@ test('walk can walk through refs', assert => {
         }
     }
 
-    walk(testData, ['me', 'name']).then((actual) => {
+    walk(testData, ['me', 'name']).then(({ jsonGraph: actual }) => {
         assert.deepEqual(actual, expected)
         assert.end()
     })

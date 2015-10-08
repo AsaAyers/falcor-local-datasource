@@ -36,9 +36,11 @@ const selectorToArray = (selector) => {
     throw new Error('Unknown selector format')
 }
 
+// returns a jsonGraphEnvelope
+// http://netflix.github.io/falcor/doc/global.html#JSONGraphEnvelope
 export default function walk(schemaRoot, ...paths) {
     // This will get built up to contain exactly the values the user asked for
-    let data = {}
+    let jsonGraph = {}
     const step = (schemaFragment, [nextKey, ...tail], past = []) => {
         let currentPath
         const next = (value) => {
@@ -48,7 +50,7 @@ export default function walk(schemaRoot, ...paths) {
             if (!isGraphPrimative(value)) {
                 warn('Value is not primative', currentPath, value)
             }
-            data = set(data, currentPath, value)
+            jsonGraph = set(jsonGraph, currentPath, value)
         }
 
         // nextKey needs special handling if it's range or index
@@ -60,20 +62,20 @@ export default function walk(schemaRoot, ...paths) {
             })
 
             // We don't actually need the value from the Promise because as
-            // these complete they will wrote to the data variable
+            // these complete they will wrote to the jsonGraph variable
             return Promise.all(branches)
         }
 
         currentPath = [...past, nextKey]
         if (schemaFragment == null) {
-            data = set(data, currentPath,
+            jsonGraph = set(jsonGraph, currentPath,
                 graphError(`Invalid path: ${JSON.stringify(currentPath)}`))
             return
         }
 
         let nextFragment = schemaFragment[nextKey]
         if (typeof nextFragment === 'object' && nextFragment['$type'] === 'ref') {
-            data = set(data, currentPath, nextFragment)
+            jsonGraph = set(jsonGraph, currentPath, nextFragment)
 
             const value = getIn(schemaRoot, nextFragment.value)
             return step(value, tail, nextFragment.value)
@@ -91,5 +93,8 @@ export default function walk(schemaRoot, ...paths) {
 
     return Promise.all(
         paths.map(p => step(schemaRoot, p))
-    ).then(() => data)
+    ).then(() => ({
+        paths,
+        jsonGraph
+    }))
 }

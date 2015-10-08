@@ -7,9 +7,7 @@ export default class DataStore {
     }
 
     get(pathSets) {
-        const promise = walk(this.schema, ...pathSets).then((jsonGraph) => {
-            return { jsonGraph }
-        })
+        const promise = walk(this.schema, ...pathSets)
 
         return Rx.Observable.fromPromise(promise)
     }
