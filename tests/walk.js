@@ -1,7 +1,14 @@
 import test from 'tape'
 import walk from '../src/walk.js'
+import { ref as $ref } from 'falcor-json-graph'
 
 const testData = {
+    users: {
+        1: {
+            name: "Asa Ayers"
+        }
+    },
+    me: $ref(['users', 1]),
     foo: {
         bar: {
             baz: "foo.bar.baz",
@@ -131,9 +138,20 @@ test('walk accepts multiple path parameters', assert => {
         ['asyncGreeting'],
     ]
 
-    // const paths = ['foo', 'bar', 'baz']
-
     walk(testData, ...paths).then((actual) => {
+        assert.deepEqual(actual, expected)
+        assert.end()
+    })
+})
+
+test('walk can walk through refs', assert => {
+    const expected = {
+        me: {
+            name: 'Asa Ayers'
+        }
+    }
+
+    walk(testData, ['me', 'name']).then((actual) => {
         assert.deepEqual(actual, expected)
         assert.end()
     })

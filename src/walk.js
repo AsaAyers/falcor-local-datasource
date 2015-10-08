@@ -1,6 +1,12 @@
 import set from './set'
 import { error as graphError } from 'falcor-json-graph'
 
+function getIn(obj, path) {
+    return path.reduce((current, key) => {
+        return current[key]
+    }, obj)
+}
+
 const warn = (...args) => {
     console.warn(...args) // eslint-disable-line no-console
 }
@@ -34,6 +40,7 @@ export default function walk(schemaRoot, ...paths) {
     // This will get built up to contain exactly the values the user asked for
     let data = {}
     const step = (schemaFragment, [nextKey, ...tail], past = []) => {
+        let currentPath
         const next = (value) => {
             if (tail.length) {
                 return step(value, tail, [...past, nextKey])
@@ -57,7 +64,7 @@ export default function walk(schemaRoot, ...paths) {
             return Promise.all(branches)
         }
 
-        const currentPath = [...past, nextKey]
+        currentPath = [...past, nextKey]
         if (schemaFragment == null) {
             data = set(data, currentPath,
                 graphError(`Invalid path: ${JSON.stringify(currentPath)}`))
@@ -65,6 +72,11 @@ export default function walk(schemaRoot, ...paths) {
         }
 
         let nextFragment = schemaFragment[nextKey]
+        if (typeof nextFragment === 'object' && nextFragment['$type'] === 'ref') {
+            currentPath = nextFragment.value
+            nextFragment = getIn(schemaRoot, nextFragment.value)
+        }
+
         if (typeof nextFragment === 'function') {
             nextFragment = nextFragment(...tail)
             if (isPromise(nextFragment)) {
