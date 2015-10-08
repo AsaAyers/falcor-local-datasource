@@ -1,16 +1,14 @@
 import Rx from 'rx'
 import walk from './walk'
 
-export class FalcorSource {
+export default class DataStore {
     constructor(schema) {
         this.schema = schema
     }
 
     get(pathSets) {
         const promise = walk(this.schema, ...pathSets).then((jsonGraph) => {
-            return {
-                jsonGraph
-            }
+            return { jsonGraph }
         })
 
         return Rx.Observable.fromPromise(promise)

@@ -5,7 +5,6 @@
   "main": "dist/data_source.js",
   "scripts": {
     "test": "babel-node ./node_modules/.bin/tape tests/*.js"
-
   },
   "repository": {
     "type": "git",
@@ -26,6 +25,7 @@
   },
   "devDependencies": {
     "babel": "^5.8.23",
+    "falcor": "^0.1.13",
     "tape": "^4.2.1"
   }
 }
