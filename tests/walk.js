@@ -24,7 +24,15 @@ const testData = {
     },
     asyncGreeting() {
         return Promise.resolve('hello')
-    }
+    },
+    letters: {
+        a: { id: 1 },
+        b: { id: 2 },
+    },
+    a: { id: 1 },
+    b: { id: 2 },
+    root1: 'root1',
+    root2: 'root2',
 }
 
 
@@ -110,4 +118,24 @@ test('walk to a promised value', assert => {
         assert.deepEqual(actual, expected)
         assert.end()
     })
+})
+
+test('walk accepts multiple path parameters', assert => {
+    const expected = {
+        greeting: 'hello',
+        asyncGreeting: 'hello',
+    }
+
+    const paths = [
+        ['greeting'],
+        ['asyncGreeting'],
+    ]
+
+    // const paths = ['foo', 'bar', 'baz']
+
+    walk(testData, ...paths).then((actual) => {
+        assert.deepEqual(actual, expected)
+        assert.end()
+    })
+
 })

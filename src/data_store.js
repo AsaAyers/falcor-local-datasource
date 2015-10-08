@@ -7,11 +7,9 @@ export class FalcorSource {
     }
 
     get(pathSets) {
-        const x = path => walk(this.schema, path)
-
-        const promise = Promise.all(pathSets.map(x)).then((x) => {
+        const promise = walk(this.schema, ...pathSets).then((jsonGraph) => {
             return {
-                jsonGraph: x[0]
+                jsonGraph
             }
         })
 
@@ -23,10 +21,8 @@ export class FalcorSource {
 
     }
 
-
     set(jsonGraphEnvelope) {
         console.log('set', ...arguments)
 
     }
-
 }

@@ -30,7 +30,7 @@ const selectorToArray = (selector) => {
     throw new Error('Unknown selector format')
 }
 
-export default function walk(schemaRoot, fullPath) {
+export default function walk(schemaRoot, ...paths) {
     // This will get built up to contain exactly the values the user asked for
     let data = {}
     const step = (schemaFragment, [nextKey, ...tail], past = []) => {
@@ -74,6 +74,7 @@ export default function walk(schemaRoot, fullPath) {
         return next(nextFragment)
     }
 
-    const tmp = step(schemaRoot, fullPath)
-    return isPromise(tmp) ? tmp.then(() => data) : Promise.resolve(data)
+    return Promise.all(
+        paths.map(p => step(schemaRoot, p))
+    ).then(() => data)
 }
