@@ -1,0 +1,31 @@
+{
+  "name": "falcor-local-datasource",
+  "version": "0.0.1",
+  "description": "DataSource for when you can't or don't want to run a specialized server",
+  "main": "dist/data_source.js",
+  "scripts": {
+    "test": "babel-node ./node_modules/.bin/tape tests/*.js"
+
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AsaAyers/falcor-local-datasource.git"
+  },
+  "keywords": [
+    "falcor"
+  ],
+  "author": "Asa Ayers <Asa@AsaAyers.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AsaAyers/falcor-local-datasource/issues"
+  },
+  "homepage": "https://github.com/AsaAyers/falcor-local-datasource#readme",
+  "dependencies": {
+    "falcor-json-graph": "^2.0.0",
+    "rx": "^2.5.3"
+  },
+  "devDependencies": {
+    "babel": "^5.8.23",
+    "tape": "^4.2.1"
+  }
+}
